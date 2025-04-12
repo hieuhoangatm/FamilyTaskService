@@ -2,10 +2,12 @@ package com.ptit.mobie.taskfamily_service.service.Impl;
 
 import com.ptit.mobie.taskfamily_service.dto.request.LoginRequest;
 import com.ptit.mobie.taskfamily_service.dto.request.RegisterRequest;
+import com.ptit.mobie.taskfamily_service.dto.response.BaseResponse;
 import com.ptit.mobie.taskfamily_service.dto.response.LoginResponse;
 import com.ptit.mobie.taskfamily_service.jwt.JwtService;
 import com.ptit.mobie.taskfamily_service.model.User;
 import com.ptit.mobie.taskfamily_service.service.AuthenticationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.ptit.mobie.taskfamily_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private AuthenticationManager authenticationManager;
 
     @Override
-    public User register(RegisterRequest request) {
+    public BaseResponse register(RegisterRequest request) {
         // Kiểm tra username đã tồn tại chưa
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username already exists");
@@ -57,7 +59,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .isCredentialsNonExpired(true)
                 .build();
 
-        return userRepository.save(user);
+        userRepository.save(user);
+        return BaseResponse.builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .data(user)
+                .message("Create user account successfully")
+                .build();
     }
 
     @Override
