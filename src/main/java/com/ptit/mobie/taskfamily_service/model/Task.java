@@ -29,7 +29,4 @@ public class Task {
 
     @OneToMany(mappedBy = "task")
     private List<Chore> chores;
-
-
-
 }
