@@ -4,6 +4,7 @@ import com.ptit.mobie.taskfamily_service.dto.request.LoginRequest;
 import com.ptit.mobie.taskfamily_service.dto.request.RegisterRequest;
 import com.ptit.mobie.taskfamily_service.dto.response.BaseResponse;
 import com.ptit.mobie.taskfamily_service.dto.response.LoginResponse;
+import com.ptit.mobie.taskfamily_service.exception.InvalidDataException;
 import com.ptit.mobie.taskfamily_service.jwt.JwtService;
 import com.ptit.mobie.taskfamily_service.model.User;
 import com.ptit.mobie.taskfamily_service.service.AuthenticationService;
@@ -35,12 +36,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public BaseResponse register(RegisterRequest request) {
         // Kiểm tra username đã tồn tại chưa
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new InvalidDataException("Username already exists");
         }
 
         // Kiểm tra email đã tồn tại chưa
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new InvalidDataException("Email already exists");
         }
 
         // Tạo user mới

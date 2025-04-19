@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "UNCATEGORIZED error"),
     USER_EXISTED(1001, "User existed"),
+    USER_NOTFOUND(1010, "User not found"),
     USERNAME_INVALID(1002, "Username must be at least 3 characters"),
     IllegalArgumentException(1003,"Search name must not be null or empty"),
     CUSTOMER_NOT_FOUND(1004, "Customer not found"),

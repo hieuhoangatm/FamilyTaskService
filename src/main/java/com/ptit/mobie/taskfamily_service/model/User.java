@@ -55,6 +55,8 @@ public class User implements UserDetails, Serializable {
     @OneToMany(mappedBy = "user")
     private List<Reward> rewards;
 
+    private Boolean isActive;
+
     @Column(name = "is_enabled")
     private boolean isEnabled = true;
 

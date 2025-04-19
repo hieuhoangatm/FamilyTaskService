@@ -1,8 +1,10 @@
 package com.ptit.mobie.taskfamily_service.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -23,12 +25,16 @@ public class PersonalTask {
     @Column(name = "description")
     private String description;
 
-    private Date start_time;
-    private Date end_time;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @Column(name = "start_time")
+    private LocalDateTime startTime;
+
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
 
     @Column(name = "note")
     private String note;
-
 
     @ManyToOne
     @JoinColumn(name = "tbl_usersid")

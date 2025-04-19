@@ -4,6 +4,7 @@ import com.ptit.mobie.taskfamily_service.dto.request.TaskRequest;
 import com.ptit.mobie.taskfamily_service.dto.response.BaseResponse;
 import com.ptit.mobie.taskfamily_service.dto.response.PagedBaseResponse;
 import com.ptit.mobie.taskfamily_service.dto.response.TaskResponse;
+import com.ptit.mobie.taskfamily_service.exception.ResourceNotFoundException;
 import com.ptit.mobie.taskfamily_service.model.Category;
 import com.ptit.mobie.taskfamily_service.model.Task;
 import com.ptit.mobie.taskfamily_service.repository.CategoryRepository;
@@ -85,7 +86,7 @@ public class TaskServiceImpl implements TaskService {
     public BaseResponse<TaskResponse> getTaskById(Integer id) {
         // Tìm Task theo ID
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
 
         // Tạo TaskResponse
         TaskResponse response = mapToTaskResponse(task);

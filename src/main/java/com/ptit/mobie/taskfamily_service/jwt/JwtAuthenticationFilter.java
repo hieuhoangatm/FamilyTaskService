@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 @Component
@@ -29,29 +30,62 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/auth/") ||
+                path.startsWith("/v3/api-docs/") ||
+                path.startsWith("/swagger-ui/") ||
+                path.equals("/swagger-ui.html");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
 
+        // Log header để kiểm tra
+        logger.debug("Authorization Header: " + authHeader);
+
+        // Kiểm tra header Authorization
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+            logger.warn("Missing or invalid Authorization header");
+            request.setAttribute("TokenIsNull", true);
+            filterChain.doFilter(request, response); // Tiếp tục xử lý
             return;
         }
 
         jwt = authHeader.substring(7); // Bỏ "Bearer " prefix
-        username = jwtService.extractUsername(jwt);
+        logger.debug("JWT Token: " + jwt);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        username = jwtService.extractUsername(jwt);
+        logger.debug("Extracted Username: " + username);
+
+        if (username == null) {
+            logger.warn("Invalid token: Cannot extract username");
+            request.setAttribute("InvalidToken", true);
+            filterChain.doFilter(request, response); // Tiếp tục xử lý
+            return;
+        }
+
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            logger.debug("UserDetails loaded: " + userDetails.getUsername());
+
             if (jwtService.validateToken(jwt, userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                logger.debug("Authentication successful for user: " + username);
+            } else {
+                logger.warn("Invalid or expired token for user: " + username);
+                request.setAttribute("InvalidToken", true);
             }
         }
+
+        // Chuyển tiếp yêu cầu để xử lý logic API và các ngoại lệ
         filterChain.doFilter(request, response);
     }
 }
