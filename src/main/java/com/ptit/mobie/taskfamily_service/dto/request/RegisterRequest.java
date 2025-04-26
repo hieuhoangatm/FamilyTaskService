@@ -11,4 +11,5 @@ public class RegisterRequest {
     private String phone;
     private String role;
     private String language;
+    private String nickName;
 }

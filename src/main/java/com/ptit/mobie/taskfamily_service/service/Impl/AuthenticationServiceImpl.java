@@ -54,6 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .role(request.getRole() != null ? request.getRole() : "USER") // Mặc định role là USER
                 .language(request.getLanguage())
                 .total_points(0) // Điểm mặc định là 0
+                .nickName(request.getNickName())
                 .isEnabled(true)
                 .isAccountNonExpired(true)
                 .isAccountNonLocked(true)
