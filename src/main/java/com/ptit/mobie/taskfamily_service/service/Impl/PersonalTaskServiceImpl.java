@@ -117,8 +117,8 @@ public class PersonalTaskServiceImpl implements PersonalTaskService {
                 .description(task.getDescription())
                 .name(task.getName())
                 .note(task.getNote())
-                .start_time(task.getStartTime())
-                .end_time(task.getEndTime())
+                .startTime(task.getStartTime())
+                .endTime(task.getEndTime())
                 .user(task.getUser())
                 .build();
     }

@@ -16,8 +16,8 @@ public class PersonalTaskResponse {
     private Integer id;
     private String name;
     private String description;
-    private LocalDateTime start_time;
-    private LocalDateTime end_time;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String note;
     private User user;
 }

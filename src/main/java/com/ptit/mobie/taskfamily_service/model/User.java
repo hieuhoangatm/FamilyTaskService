@@ -46,8 +46,13 @@ public class User implements UserDetails, Serializable {
     @Column(name = "language")
     private String language;
 
+    private String nickName;
+
     @OneToMany(mappedBy = "user")
     private List<Chore> chores;
+
+    @ManyToMany(mappedBy = "users")  // Đối chiếu với 'users' trong Task
+    private List<Task> tasks;
 
     @OneToMany(mappedBy = "user")
     private List<PersonalTask> personalTasks;
@@ -56,6 +61,7 @@ public class User implements UserDetails, Serializable {
     private List<Reward> rewards;
 
     private Boolean isActive;
+
 
     @Column(name = "is_enabled")
     private boolean isEnabled = true;

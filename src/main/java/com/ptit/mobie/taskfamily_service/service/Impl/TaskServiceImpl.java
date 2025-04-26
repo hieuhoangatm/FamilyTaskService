@@ -4,11 +4,15 @@ import com.ptit.mobie.taskfamily_service.dto.request.TaskRequest;
 import com.ptit.mobie.taskfamily_service.dto.response.BaseResponse;
 import com.ptit.mobie.taskfamily_service.dto.response.PagedBaseResponse;
 import com.ptit.mobie.taskfamily_service.dto.response.TaskResponse;
+import com.ptit.mobie.taskfamily_service.dto.response.UserTaskReponse;
+import com.ptit.mobie.taskfamily_service.enums.TaskStatus;
 import com.ptit.mobie.taskfamily_service.exception.ResourceNotFoundException;
 import com.ptit.mobie.taskfamily_service.model.Category;
 import com.ptit.mobie.taskfamily_service.model.Task;
+import com.ptit.mobie.taskfamily_service.model.User;
 import com.ptit.mobie.taskfamily_service.repository.CategoryRepository;
 import com.ptit.mobie.taskfamily_service.repository.TaskRepository;
+import com.ptit.mobie.taskfamily_service.repository.UserRepository;
 import com.ptit.mobie.taskfamily_service.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +28,9 @@ public class TaskServiceImpl implements TaskService {
     private TaskRepository taskRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private CategoryRepository categoryRepository;
 
     @Override
@@ -32,11 +39,16 @@ public class TaskServiceImpl implements TaskService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + request.getCategoryId()));
 
+        List<User> users = userRepository.findAllById(request.getUserIds());
         // Tạo Task mới
         Task task = Task.builder()
                 .title(request.getTitle())
                 .icon(request.getIcon())
                 .category(category)
+                .point(request.getPoint())
+                .status(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO)
+                .deadline(request.getDeadline())
+                .users(users)
                 .build();
 
         // Lưu Task
@@ -140,12 +152,28 @@ public class TaskServiceImpl implements TaskService {
 
     // Helper method để ánh xạ Task sang TaskResponse
     private TaskResponse mapToTaskResponse(Task task) {
+        List<UserTaskReponse> userResponses = task.getUsers().stream()
+                .map(user -> UserTaskReponse.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .nickName(user.getNickName())
+                        .build())
+                .toList();
+
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
                 .icon(task.getIcon())
                 .categoryId(task.getCategory().getId())
                 .categoryName(task.getCategory().getName()) // Giả sử Category có field name
+                .deadline(task.getDeadline())
+                .createdBy(task.getCreatedBy())
+                .createdAt(task.getCreatedAt())
+                .updatedAt(task.getUpdatedAt())
+                .updatedBy(task.getUpdatedBy())
+                .status(task.getStatus())
+                .point(task.getPoint())
+                .users(userResponses)
                 .build();
     }
 }
