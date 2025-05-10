@@ -34,8 +34,8 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<Category>> getCategoryById(@PathVariable Integer id) {
-        BaseResponse<Category> response = categoryService.getTaskById(id);
+    public ResponseEntity<BaseResponse<CategoryResponse>> getCategoryById(@PathVariable Integer id) {
+        BaseResponse<CategoryResponse> response = categoryService.getTaskById(id);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 

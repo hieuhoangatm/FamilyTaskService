@@ -53,15 +53,20 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public BaseResponse<Category> getTaskById(Integer id) {
+    public BaseResponse<CategoryResponse> getTaskById(Integer id) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isEmpty()) {
             throw new ResourceNotFoundException("Category not found with id: " + id);
         }
-        return BaseResponse.<Category>builder()
+//        return BaseResponse.<Category>builder()
+//                .message("Get category with id "+id +"successfully")
+//                .statusCode(200)
+//                .data()
+//                .build();
+        return BaseResponse.<CategoryResponse>builder()
                 .message("Get category with id "+id +"successfully")
                 .statusCode(200)
-                .data(optionalCategory.get())
+                .data(mapToCategoryResponse(optionalCategory.get()))
                 .build();
     }
 

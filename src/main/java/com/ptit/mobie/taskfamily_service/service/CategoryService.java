@@ -11,7 +11,7 @@ import java.util.List;
 public interface CategoryService {
     BaseResponse<Object> createTask(Category category);
     BaseResponse<Category> updateTask(Integer id, Category category);
-    BaseResponse<Category> getTaskById(Integer id);
+    BaseResponse<CategoryResponse> getTaskById(Integer id);
     BaseResponse<Void> deleteTask(Integer id);
     PagedBaseResponse<List<CategoryResponse>> getAllTasks(Pageable pageable);
 }
