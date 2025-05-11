@@ -44,7 +44,7 @@ public class Task {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> users;
-
+    
     @Column(name = "point")
     private Integer point;
 
