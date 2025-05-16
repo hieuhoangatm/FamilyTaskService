@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final UserRepository userRepository;
 
     @Override
-    public BaseResponse<Object> createTask(Category category) {
+    public BaseResponse<Object> createCategory(Category category) {
         Category savedCategory = categoryRepository.save(category);
         return BaseResponse.builder()
                 .statusCode(HttpStatus.CREATED.value())
@@ -36,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public BaseResponse<Category> updateTask(Integer id, Category category) {
+    public BaseResponse<Category> updateCategory(Integer id, Category category) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isEmpty()) {
             throw  new ResourceNotFoundException("Category not found with id: " + id);
@@ -53,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public BaseResponse<CategoryResponse> getTaskById(Integer id) {
+    public BaseResponse<CategoryResponse> getCategoryById(Integer id) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isEmpty()) {
             throw new ResourceNotFoundException("Category not found with id: " + id);
@@ -71,7 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public BaseResponse<Void> deleteTask(Integer id) {
+    public BaseResponse<Void> deleteCategory(Integer id) {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isEmpty()) {
             throw new ResourceNotFoundException("Category not found with id: " + id);
@@ -84,7 +85,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PagedBaseResponse<List<CategoryResponse>> getAllTasks(Pageable pageable) {
+    public PagedBaseResponse<List<CategoryResponse>> getAllCategory(Pageable pageable) {
         Page<Category> categoryPage = categoryRepository.findAll(pageable);
 
         List<CategoryResponse> categoryResponses = categoryPage.getContent().stream()
@@ -100,6 +101,33 @@ public class CategoryServiceImpl implements CategoryService {
                 .pageSize(categoryPage.getSize())
                 .totalElements(categoryPage.getTotalElements())
                 .totalPages(categoryPage.getTotalPages())
+                .build();
+    }
+
+    @Override
+    public BaseResponse<CategoryResponse> getCategoryWithTask(Integer categoryId, Integer taskId) {
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+        if (optionalCategory.isEmpty()) {
+            throw new ResourceNotFoundException("Category not found with id: " + categoryId);
+        }
+        Category category = optionalCategory.get();
+        CategoryResponse categoryResponse = mapToCategoryResponse(category);
+
+        // Nếu taskId được cung cấp, lọc danh sách tasks để chỉ chứa task có taskId
+        if (taskId != null) {
+            List<TaskInCategoryResponse> filteredTasks = categoryResponse.getTasks().stream()
+                    .filter(task -> task.getId().equals(taskId))
+                    .collect(Collectors.toList());
+            if (filteredTasks.isEmpty()) {
+                throw new ResourceNotFoundException("Task with id " + taskId + " not found in category " + categoryId);
+            }
+            categoryResponse.setTasks(filteredTasks);
+        }
+
+        return BaseResponse.<CategoryResponse>builder()
+                .message("Get category with id " + categoryId + " successfully")
+                .statusCode(200)
+                .data(categoryResponse)
                 .build();
     }
 

@@ -23,25 +23,32 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<BaseResponse<Object>> createCategory(@RequestBody Category category) {
-        BaseResponse<Object> response = categoryService.createTask(category);
+        BaseResponse<Object> response = categoryService.createCategory(category);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponse<Category>> updateCategory(@PathVariable Integer id, @RequestBody Category category) {
-        BaseResponse<Category> response = categoryService.updateTask(id, category);
+        BaseResponse<Category> response = categoryService.updateCategory(id, category);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse<CategoryResponse>> getCategoryById(@PathVariable Integer id) {
-        BaseResponse<CategoryResponse> response = categoryService.getTaskById(id);
+//    @GetMapping("/{id}")
+//    public ResponseEntity<BaseResponse<CategoryResponse>> getCategoryById(@PathVariable Integer id) {
+//        BaseResponse<CategoryResponse> response = categoryService.getCategoryById(id);
+//        return ResponseEntity.status(response.getStatusCode()).body(response);
+//    }
+
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<BaseResponse<CategoryResponse>> getCategoryWithTask(
+            @PathVariable Integer categoryId,
+            @RequestParam(value = "taskId", required = false) Integer taskId) {
+        BaseResponse<CategoryResponse> response = categoryService.getCategoryWithTask(categoryId, taskId);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse<Void>> deleteCategory(@PathVariable Integer id) {
-        BaseResponse<Void> response = categoryService.deleteTask(id);
+        BaseResponse<Void> response = categoryService.deleteCategory(id);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
@@ -50,7 +57,7 @@ public class CategoryController {
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        PagedBaseResponse<List<CategoryResponse>> response = categoryService.getAllTasks(pageable);
+        PagedBaseResponse<List<CategoryResponse>> response = categoryService.getAllCategory(pageable);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 }

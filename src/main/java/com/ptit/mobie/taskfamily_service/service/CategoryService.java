@@ -9,9 +9,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface CategoryService {
-    BaseResponse<Object> createTask(Category category);
-    BaseResponse<Category> updateTask(Integer id, Category category);
-    BaseResponse<CategoryResponse> getTaskById(Integer id);
-    BaseResponse<Void> deleteTask(Integer id);
-    PagedBaseResponse<List<CategoryResponse>> getAllTasks(Pageable pageable);
+    BaseResponse<Object> createCategory(Category category);
+    BaseResponse<Category> updateCategory(Integer id, Category category);
+    BaseResponse<CategoryResponse> getCategoryById(Integer id);
+    BaseResponse<Void> deleteCategory(Integer id);
+    PagedBaseResponse<List<CategoryResponse>> getAllCategory(Pageable pageable);
+
+    BaseResponse<CategoryResponse> getCategoryWithTask(Integer categoryId, Integer taskId);
 }

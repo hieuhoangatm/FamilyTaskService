@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 public class User implements UserDetails, Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType   .IDENTITY)
     private Integer id;
 
     @Column(name = "username")
