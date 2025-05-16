@@ -53,4 +53,17 @@ public class TaskController {
         PagedBaseResponse<Iterable<TaskResponse>> response = taskService.getAllTasks(pageable);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
+
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<BaseResponse<TaskResponse>> markTaskAsCompleted(@PathVariable Integer id) {
+        BaseResponse<TaskResponse> response = taskService.markTaskAsCompleted(id);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+
+    @PostMapping("/check-overdue")
+    public ResponseEntity<BaseResponse<Void>> checkAndUpdateOverdueTasks() {
+        BaseResponse<Void> response = taskService.checkAndUpdateOverdueTasks();
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
 }

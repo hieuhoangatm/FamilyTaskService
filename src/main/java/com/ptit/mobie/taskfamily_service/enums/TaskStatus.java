@@ -5,5 +5,7 @@ public enum TaskStatus {
     IN_PROGRESS,    // Đang thực hiện
     REVIEW,         // Đang chờ duyệt
     DONE,           // Đã hoàn thành
-    CANCELLED       // Đã hủy
+    CANCELLED,       // Đã hủy
+
+    OVERDUE,
 }

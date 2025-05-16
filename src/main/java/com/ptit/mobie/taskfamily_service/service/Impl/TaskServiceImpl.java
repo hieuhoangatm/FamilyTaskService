@@ -17,8 +17,10 @@ import com.ptit.mobie.taskfamily_service.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -147,6 +149,54 @@ public class TaskServiceImpl implements TaskService {
                 .pageSize(taskPage.getSize())
                 .totalElements(taskPage.getTotalElements())
                 .totalPages(taskPage.getTotalPages())
+                .build();
+    }
+
+    @Override
+    public BaseResponse<TaskResponse> markTaskAsCompleted(Integer id) {
+        // Tìm Task theo ID
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Công việc không tồn tại với id: " + id));
+
+        // Cập nhật trạng thái sang DONE
+        task.setStatus(TaskStatus.DONE);
+
+        // Lưu Task đã cập nhật
+        task = taskRepository.save(task);
+
+        // Tạo TaskResponse
+        TaskResponse response = mapToTaskResponse(task);
+
+        // Trả về BaseResponse
+        return BaseResponse.<TaskResponse>builder()
+                .statusCode(200)
+                .message("Công việc đã được đánh dấu hoàn thành")
+                .data(response)
+                .build();
+    }
+    @Scheduled(cron = "0 0 0 * * ?") // Chạy lúc 00:00 mỗi ngày
+    public void checkAndUpdateOverdueTasksScheduled() {
+        checkAndUpdateOverdueTasks();
+    }
+
+    @Override
+    public BaseResponse<Void> checkAndUpdateOverdueTasks() {
+        // Lấy ngày hiện tại
+        LocalDate today = LocalDate.now();
+
+        // Tìm tất cả các công việc có trạng thái TODO và deadline trước ngày hiện tại
+        List<Task> overdueTasks = taskRepository.findAllByStatusAndDeadlineBefore(TaskStatus.TODO, today);
+
+        // Cập nhật trạng thái thành OVERDUE
+        for (Task task : overdueTasks) {
+            task.setStatus(TaskStatus.OVERDUE);
+            taskRepository.save(task);
+        }
+
+        // Trả về BaseResponse
+        return BaseResponse.<Void>builder()
+                .statusCode(200)
+                .message("Đã cập nhật trạng thái các công việc quá hạn thành công")
                 .build();
     }
 

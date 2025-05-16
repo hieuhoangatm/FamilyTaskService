@@ -12,4 +12,8 @@ public interface TaskService {
     BaseResponse<TaskResponse> getTaskById(Integer id);
     BaseResponse<Void> deleteTask(Integer id);
     PagedBaseResponse<Iterable<TaskResponse>> getAllTasks(Pageable pageable);
+
+    BaseResponse<TaskResponse> markTaskAsCompleted(Integer id);
+
+    BaseResponse<Void> checkAndUpdateOverdueTasks();
 }
